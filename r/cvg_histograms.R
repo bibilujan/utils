@@ -8,7 +8,7 @@ args = commandArgs(trailingOnly=TRUE)
 
 # test if there is at least one argument: if not, return an error
 if (length(args)==0) {
-  stop("At least one argument must be supplied (input file)/nUsage:/nRscript cvg_histograms.R sample_bedtools_cvg.txt probe.bed", call.=FALSE)
+  stop("At least one argument must be supplied (input file)/nUsage:/nRscript cvg_histograms.R sample_bedtools_cvg.txt probe.bed output_folder", call.=FALSE)
 } 
 
 # Read and add column names to probe bed file
@@ -20,7 +20,7 @@ rownames(bed)<-paste(bed$chrom,":",bed$start,"-",bed$stop,sep="")
 
 # Read and add column names to bedtools histogram
 #hist<-read.delim("/Users/blujantoro/probeCoverageDev/GBS-2987/cvg/LLDM_0019_Ln_P_PE_358_TS_210727_A00469_0191_AH7MVVDSX2_3_GCCTATCA-AATGGTCG_R1.fastq.gz.cvghist.txt",sep="\t",as.is=T,header=F)
-hist<-read.delim(id,sep="\t",as.is=T,header=F)
+hist<-read.delim(arg[1],sep="\t",as.is=T,header=F)
 colnames(hist)<-c("chrom","start","stop","pool","depth","bases","size","proportion")
 hist<-hist[hist$chrom != "all",]
 hist$interval<-paste(hist$chrom,":",hist$start,"-",hist$stop,sep="")
@@ -131,7 +131,7 @@ gall <-ggarrange(g1, g2, g3, g4,
                  #labels = c("A", "B", "C"),
                  ncol = 1, nrow =4)
 #gall <-annotate_figure(gall,top = text_grob(id, size = 10))
-ggsave(gall,file=paste(id, "_pct_covered.png", sep = ""),dev="png",height=10,width=15)
+ggsave(gall,file=paste(arg[3], "/", id, "_pct_covered.png", sep = ""),dev="png",height=10,width=15)
 
 
 ############# Sorted coverage
@@ -151,6 +151,6 @@ g6<-ggplot(df2[df2$metric == "cvg_mean",],aes(x=reorder_within(interval,value,li
   theme(axis.text.x = element_blank()) +
   guides(x = "none") +
   labs(title=paste ("Sorted Mean Interval coverage-log scale", sep = "")) + xlab("interval") + ylab("mean coverage")
-ggsave(g6,file=paste(id, "_sorted_mean_intv_cov.png", sep = ""),dev="png",height=10,width=15)
+ggsave(g6,file=paste(arg[3], "/", id, "_sorted_mean_intv_cov.png", sep = ""),dev="png",height=10,width=15)
 
 
