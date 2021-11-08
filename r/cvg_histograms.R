@@ -10,17 +10,19 @@ args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0) {
   stop("At least one argument must be supplied (input file)/nUsage:/nRscript cvg_histograms.R sample_bedtools_cvg.txt probe.bed output_folder", call.=FALSE)
 } 
-
+cat(args[1])
+cat(args[2])
+cat(args[3])
 # Read and add column names to probe bed file
 #bed<-read.delim(file="/Users/blujantoro/probeCoverageDev/GBS-2987/bed/LLDM.EXOME.TS.hg19.bed", sep="\t",header=F)
-bed<-read.delim(file=args[1], sep="\t",header=F)
+bed<-read.delim(file=args[2], sep="\t",header=F)
 colnames(bed)<-c("chrom","start","stop","pool")
 bed<-bed[order(bed$pool,bed$chrom,bed$start),]
 rownames(bed)<-paste(bed$chrom,":",bed$start,"-",bed$stop,sep="")
 
 # Read and add column names to bedtools histogram
 #hist<-read.delim("/Users/blujantoro/probeCoverageDev/GBS-2987/cvg/LLDM_0019_Ln_P_PE_358_TS_210727_A00469_0191_AH7MVVDSX2_3_GCCTATCA-AATGGTCG_R1.fastq.gz.cvghist.txt",sep="\t",as.is=T,header=F)
-hist<-read.delim(arg[1],sep="\t",as.is=T,header=F)
+hist<-read.delim(args[1],sep="\t",as.is=T,header=F)
 colnames(hist)<-c("chrom","start","stop","pool","depth","bases","size","proportion")
 hist<-hist[hist$chrom != "all",]
 hist$interval<-paste(hist$chrom,":",hist$start,"-",hist$stop,sep="")
@@ -91,14 +93,15 @@ g1<-ggplot(percent_intervals_with_coverage,aes(y=value,x=pool,col=pool)) +
   #facet_wrap(~id,ncol=3) +
   theme(axis.text.x = element_blank(), legend.key.height= unit(0.4, 'cm'),
         legend.key.width= unit(0.4, 'cm')) +
-  labs(title=paste("                                                                                                  ", id,"\nPercent of Intervals with coverage", sep = "")) +
+  labs(title=paste("                                                                                                  ", 
+                   id,"\nPercent of Intervals with Coverage", sep = "")) +
   xlab("pool") + 
   ylab("percent")
 
 g2<-ggplot(df.set[df.set$metric=="pct_cvd",], aes(x=as.factor(pool), y=value, col=pool)) + 
   #geom_bar(stat="identity") + 
   geom_boxplot(fill="slateblue", alpha=0.2) + 
-  labs(title=paste ("Proportion of Interval covered", sep = "")) + xlab("pool") + ylab("percent")+
+  labs(title=paste ("Proportion of Interval Covered", sep = "")) + xlab("pool") + ylab("percent")+
   #ylab("Proportion of interval covered") + 
   theme(axis.text.x = element_blank(), legend.key.height= unit(0.4, 'cm'),
         legend.key.width= unit(0.4, 'cm')) #+
@@ -114,7 +117,7 @@ g3<-ggplot(percent_intervals_with_90_coverage,aes(y=value,x=pool,col=pool)) +
   #facet_wrap(~id,ncol=3) +
   theme(axis.text.x = element_blank(), legend.key.height= unit(0.4, 'cm'),
         legend.key.width= unit(0.4, 'cm')) +
-  labs(title=paste ("Percent of Intervals >90% covered", sep = "")) + 
+  labs(title=paste ("Percent of Intervals >90% Covered", sep = "")) + 
   xlab("pool") + ylab("percent")
 #ggsave(g3,file=paste("percent_90covered.png", sep=""),dev="png",height=30,width=15)
 
@@ -124,14 +127,14 @@ g4<-ggplot(percent_intervals_with_75_coverage,aes(y=value,x=pool,col=pool)) +
   #facet_wrap(~id,ncol=3) +
   theme(axis.text.x = element_blank(), legend.key.height= unit(0.4, 'cm'),
         legend.key.width= unit(0.4, 'cm')) +
-  labs(title=paste ("Percent of Intervals >75% covered", sep = "")) + 
+  labs(title=paste ("Percent of Intervals >75% Covered", sep = "")) + 
   xlab("pool") + ylab("percent")
 
 gall <-ggarrange(g1, g2, g3, g4,
                  #labels = c("A", "B", "C"),
                  ncol = 1, nrow =4)
 #gall <-annotate_figure(gall,top = text_grob(id, size = 10))
-ggsave(gall,file=paste(arg[3], "/", id, "_pct_covered.png", sep = ""),dev="png",height=10,width=15)
+ggsave(gall,file=paste(args[3], "/", id, "_pct_covered.png", sep = ""),dev="png",height=10,width=15)
 
 
 ############# Sorted coverage
@@ -150,7 +153,7 @@ g6<-ggplot(df2[df2$metric == "cvg_mean",],aes(x=reorder_within(interval,value,li
   scale_y_log10()+
   theme(axis.text.x = element_blank()) +
   guides(x = "none") +
-  labs(title=paste ("Sorted Mean Interval coverage-log scale", sep = "")) + xlab("interval") + ylab("mean coverage")
-ggsave(g6,file=paste(arg[3], "/", id, "_sorted_mean_intv_cov.png", sep = ""),dev="png",height=10,width=15)
+  labs(title=paste (id, "Sorted Mean Interval Coverage (log scale)", sep = "")) + xlab("interval") + ylab("mean coverage")
+ggsave(g6,file=paste(args[3], "/", id, "_sorted_mean_intv_cov.png", sep = ""),dev="png",height=10,width=15)
 
 
