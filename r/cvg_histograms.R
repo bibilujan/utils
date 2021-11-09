@@ -3,6 +3,7 @@
 library(ggpubr)
 library(ggplot2)
 library(tidytext)
+library(stringr)
 
 args = commandArgs(trailingOnly=TRUE)
 
@@ -29,6 +30,7 @@ hist$interval<-paste(hist$chrom,":",hist$start,"-",hist$stop,sep="")
 
 # Rename id 
 #id <- "/Users/blujantoro/probeCoverageDev/GBS-2987/cvg/LLDM_0019_Ln_P_PE_358_TS_210727_A00469_0191_AH7MVVDSX2_3_GCCTATCA-AATGGTCG_R1.fastq.gz.cvghist.txt"
+lane <- str_match(id,"(_[0-9])_")[2]
 #id<-sub("^.*cvg/","",id)
 id<-sub("^.*cvg/","",args[1])
 id<-sub("_TS.*$","",id)
@@ -94,7 +96,7 @@ g1<-ggplot(percent_intervals_with_coverage,aes(y=value,x=pool,col=pool)) +
   theme(axis.text.x = element_blank(), legend.key.height= unit(0.4, 'cm'),
         legend.key.width= unit(0.4, 'cm')) +
   labs(title=paste("                                                                                                  ", 
-                   id,"\nPercent of Intervals with Coverage", sep = "")) +
+                   id, lane,"\nPercent of Intervals with Coverage", sep = "")) +
   xlab("pool") + 
   ylab("percent")
 
@@ -134,7 +136,7 @@ gall <-ggarrange(g1, g2, g3, g4,
                  #labels = c("A", "B", "C"),
                  ncol = 1, nrow =4)
 #gall <-annotate_figure(gall,top = text_grob(id, size = 10))
-ggsave(gall,file=paste(args[3], "/", id, "_pct_covered.png", sep = ""),dev="png",height=10,width=15)
+ggsave(gall,file=paste(args[3], "/", id, lane, "_pct_covered.png", sep = ""),dev="png",height=10,width=15)
 
 
 ############# Sorted coverage
@@ -153,7 +155,7 @@ g6<-ggplot(df2[df2$metric == "cvg_mean",],aes(x=reorder_within(interval,value,li
   scale_y_log10()+
   theme(axis.text.x = element_blank()) +
   guides(x = "none") +
-  labs(title=paste (id, "Sorted Mean Interval Coverage (log scale)", sep = "")) + xlab("interval") + ylab("mean coverage")
-ggsave(g6,file=paste(args[3], "/", id, "_sorted_mean_intv_cov.png", sep = ""),dev="png",height=10,width=15)
+  labs(title=paste (id, lane, " Sorted Mean Interval Coverage (log scale)", sep = "")) + xlab("interval") + ylab("mean coverage")
+ggsave(g6,file=paste(args[3], "/", id, lane, "_sorted_mean_intv_cov.png", sep = ""),dev="png",height=10,width=15)
 
 
