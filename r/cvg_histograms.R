@@ -30,9 +30,10 @@ hist$interval<-paste(hist$chrom,":",hist$start,"-",hist$stop,sep="")
 
 # Rename id 
 #id <- "/Users/blujantoro/probeCoverageDev/GBS-2987/cvg/LLDM_0019_Ln_P_PE_358_TS_210727_A00469_0191_AH7MVVDSX2_3_GCCTATCA-AATGGTCG_R1.fastq.gz.cvghist.txt"
-lane <- str_match(id,"(_[0-9])_")[2]
-#id<-sub("^.*cvg/","",id)
+#lane <- str_match(id,"(_[0-9])_")[2]
+
 id<-sub("^.*cvg/","",args[1])
+lane <- str_match(id,"(_[0-9])_")[2]
 id<-sub("_TS.*$","",id)
 cat(id)
 #hist.files=dir("cvg",full.names=T)
